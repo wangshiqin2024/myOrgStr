@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>人员上下级信息查询</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .input-area {
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            height: 48px;
+            border: 1px solid #e4e7ed;
+            border-radius: 8px;
+            padding: 0 15px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        input:focus {
+            outline: none;
+            border-color: #409eff;
+        }
+        button {
+            width: 100%;
+            height: 48px;
+            background-color: #409eff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        button:active {
+            background-color: #66b1ff;
+        }
+        .result-box {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            border: 1px solid #b3d8ff;
+            line-height: 2;
+            font-size: 15px;
+        }
+        .error-tip {
+            color: #f56c6c;
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fef0f0;
+            border-radius: 8px;
+            border: 1px solid #fbc4c4;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #303133;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">人员信息查询</div>
+        <div class="input-area">
+            <input type="tel" id="phoneInput" placeholder="请输入11位手机号查询" maxlength="11">
+            <button onclick="searchUser()">提交查询</button>
+        </div>
+        <div id="resultArea"></div>
+    </div>
+
+    <script>
+        // 你后续全量数据替换下面这个数组里的内容即可
+        const people = [
+            {
+                "name": "窦鹏1",
+                "phone": "13849772091",
+                "boss": "梁士鹏1",
+                "bossPhone": "15090103046",
+                "subs": [
+                    {"name": "曹正远", "phone": "18885255468"},
+                    {"name": "刘开勇", "phone": "18984272426"},
+                    {"name": "周柏林", "phone": "15187803822"},
+                    {"name": "田永贵", "phone": "13980872948"},
+                    {"name": "卢中奎", "phone": "18275660341"},
+                    {"name": "李光德", "phone": "18985601261"},
+                    {"name": "刘正均", "phone": "13885218802"},
+                    {"name": "王方强", "phone": "15329884608"}
+                ]
+            },
+            {
+                "name": "窦鹏2",
+                "phone": "13849772092",
+                "boss": "梁士鹏2",
+                "bossPhone": "15090103046",
+                "subs": [
+                    {"name": "曹正远", "phone": "18885255468"},
+                    {"name": "刘开勇", "phone": "18984272426"},
+                    {"name": "周柏林", "phone": "15187803822"},
+                    {"name": "田永贵", "phone": "13980872948"},
+                    {"name": "卢中奎", "phone": "18275660341"},
+                    {"name": "李光德", "phone": "18985601261"},
+                    {"name": "刘正均", "phone": "13885218802"},
+                    {"name": "王方强", "phone": "15329884608"}
+                ]
+            }
+        ];
+
+        function searchUser() {
+            const inputPhone = document.getElementById('phoneInput').value.trim();
+            const resultArea = document.getElementById('resultArea');
+            
+            // 手机号格式校验
+            if(!/^1[3-9]\d{9}$/.test(inputPhone)) {
+                resultArea.innerHTML = `<div class="error-tip">请输入正确的11位手机号</div>`;
+                return;
+            }
+
+            // 匹配人员信息
+            const target = people.find(item => item.phone === inputPhone);
+            if(!target) {
+                resultArea.innerHTML = `<div class="error-tip">未查询到该手机号对应的人员信息，请核对后重试</div>`;
+                return;
+            }
+
+            // 格式化下级信息
+            const subsList = (target.subs || []).map(sub => `${sub.name} ${sub.phone}`).join('') || '无下级人员';
+            const bossInfo = target.boss ? `${target.boss} ${target.bossPhone}` : '无上级信息';
+
+            // 渲染结果
+            resultArea.innerHTML = `
+                <div class="result-box">
+                    <p><span class="info-label">本人信息：</span>${target.name} ${target.phone}</p>
+                    <p><span class="info-label">上级领导：</span>${bossInfo}</p>
+                    <p><span class="info-label">下辖人员：</span>${subsList}</p>
+                </div>
+            `;
+        }
+
+        // 回车直接查询
+        document.getElementById('phoneInput').addEventListener('keydown', function(e) {
+            if(e.key === 'Enter') searchUser();
+        });
+    </script>
+</body>
+</html>
